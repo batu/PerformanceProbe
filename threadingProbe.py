@@ -1,5 +1,3 @@
-__author__ = 'batu'
-
 # Batu Aytemiz
 # 29.09.2015 13:52
 # Performance Monitor
@@ -14,11 +12,16 @@ __author__ = 'batu'
 
 
 
-import time, requests, calendar, sys
+from threading import Thread
+import time, requests, calendar, threading
+
+file = open('probingSamples', 'w')
 
 
 
-def probeMonitor(url):
+
+
+def probingMonitor(url):
     start_time = time.time()
     print('Request sent to ' + url)
     try:
@@ -33,10 +36,13 @@ def probeMonitor(url):
     except OSError:
         print("Timed out...")
         file.write(str( calendar.timegm(time.gmtime()) ) + ',' + str(-1) + '\n')
+    time.sleep(1)
 
-
-file = open(sys.argv[2], 'w')
-
+url = "http://www.facebook.com/"
 while(True):
-    probeMonitor(sys.argv[1] )
-    time.sleep(5)
+    probeThread = Thread(target=probingMonitor, args=(url,))
+    probeThread.start()
+    probeThread.join()
+
+
+
